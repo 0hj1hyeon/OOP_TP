@@ -1,10 +1,11 @@
 #include "member.h" // Member 클래스 정의가 있는 헤더 파일을 포함합니다.
 
 // 생성자 구현
-Member::Member(const std::string& memberId, const std::string& password, const std::string& memberName, int bookLimit, int daysLimit) {
+Member::Member(const std::string& memberId, const std::string& password, const std::string& memberName,const std::string& memberJob, int bookLimit, int daysLimit) {
     id = memberId;
     pw = password;
     name = memberName;
+    job = memberJob;
     booklimit = bookLimit;
     daylimit = daysLimit;
 }
@@ -20,6 +21,9 @@ std::string Member::getPassword() const {
 
 std::string Member::getName() const {
     return name;
+}
+std::string Member::getJob() const {
+    return job;
 }
 
 int Member::getBookLimit() const {
@@ -41,6 +45,10 @@ void Member::setPassword(const std::string& password) {
 
 void Member::setName(const std::string& memberName) {
     name = memberName;
+}
+
+void Member::setJob(const std::string& memberJob) {
+    job = memberJob;  
 }
 
 void Member::setBookLimit(int bookLimit) {
