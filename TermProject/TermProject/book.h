@@ -13,7 +13,7 @@ private:
     std::string review;   // 리뷰
     int page;             // 페이지 수
     bool rent;            // 대여 여부
-
+    int daylimit;         // 대여 기한
 
 public:
     // 생성자
@@ -28,6 +28,7 @@ public:
     float getStarPoint() const;
     std::string getReview() const;
     int getPage() const;
+    int getDaysLimit() const; 
     bool isRented() const;
 
     // 수정자 (Setter)
@@ -40,6 +41,11 @@ public:
     void setReview(const std::string& review);
     void setPage(int page);
     void setRentStatus(bool rent);
+
+    //추가 함수
+    void saveReviewToFile() const;
+    void readReviewFile();
+    bool checkOverdue() const;
 
 
 };
