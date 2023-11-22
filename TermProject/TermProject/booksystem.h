@@ -31,12 +31,14 @@ public:
         }
     }
 
-    // 도서 목록 반환 메서드
     const vector<Book>& getBooks() const {
         return books;
     }
 
 
+    void book_and_app() {
+        save_Book_File();
+    }
 
 
     // 도서 대여 메서드: 특정 도서를 대여하고 파일에 저장

@@ -1,7 +1,7 @@
 ﻿#include "book.h"
 #include "member.h"
-
-
+#include "booksystem.h"
+#include "membersystem.h"
 //도서를 벡터로 저장(코드 합치면 없어질듯)
 void AddBookToLibrary(vector<Book>& library, const Book& book) {
     library.push_back(book);  //벡터에 객체 저장
