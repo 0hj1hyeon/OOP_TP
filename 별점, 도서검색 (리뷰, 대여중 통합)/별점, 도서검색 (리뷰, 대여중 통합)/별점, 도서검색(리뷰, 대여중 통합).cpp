@@ -25,9 +25,6 @@ public:
     // 생성자: 도서 정보를 초기화
     Book(const string& bookName, const string& writer, const string& publisher, const string& genre, float numbering, float starPoint, const string& review, int page, bool rent, string rentId)
         : bookname(bookName), writer(writer), publisher(publisher), genre(genre), numbering(numbering), star_point(starPoint), review(review), page(page), rent(rent), rentingMemberId(rentId) {}
-    
-   
-
 
     // Getter 메서드들: 속성값을 반환
     string getBookName() const {
@@ -97,6 +94,9 @@ public:
         cout << "고유번호: " << numbering << endl;
         cout << "페이지 수: " << page << endl;
         cout << "대여 여부: " << (rent ? "대여 중" : "대여 가능") << endl;
+
+
+        //------- 추가 ------//
         cout << "별점: " << star_point << endl;
         cout << "도서 리뷰: " << endl;
         displayReview();
@@ -112,6 +112,9 @@ public:
         this->rent = rent;
         rentingMemberId = memberId;
     }
+
+
+    //------- 추가 ------//
 
     //특정 키워드가 도서 제목 또는 저자에 포함되어 있는지 확인
     bool containsKeyword(const string& keyword) const {
@@ -133,6 +136,8 @@ public:
             cout << "* 등록된 리뷰가 없습니다." << endl;
         }
     }
+
+    //------- 추가 ------//
 };
 
 
@@ -183,23 +188,49 @@ public:
         }
     }
 
-    void display() const {
+
+    void check_rentedBooks(string& id) { // 오지현 추가함(회원의 텍스트 파일 열어서 안의 책제목들 출력)
+        ifstream file(id + "_rentedbook.txt");
+        string line;
+        if (file.is_open()) {
+            while (getline(file, line)) {
+                cout << line << std::endl; // 한 줄씩 출력
+            }
+            file.close();
+        }
+        else {
+            cout << "파일을 열 수 없습니다." << std::endl;
+        }
+
+    }
+
+
+    virtual void display() const {
         cout << "아이디: " << id << endl;
         cout << "비밀번호: " << pw << endl;
         cout << "이름: " << name << endl;
         cout << "직업: " << job << endl;
+
     }
 };
 
+
 class User : public Member {
 private:
+    vector<User> users;
     int booklimit; // 대여 가능한 권 수
     int daylimit;  // 대여 가능 기간 
 
 public:
     User(const string& memberId, const string& password, const string& memberName, const string& memberJob,
         int bookLimit, int daysLimit)
-        : Member(memberId, password, memberName, memberJob), booklimit(bookLimit), daylimit(daysLimit) {}
+        : Member(memberId, password, memberName, memberJob), booklimit(bookLimit), daylimit(daysLimit) {
+    }
+
+
+    User(const string& memberId, const string& password, const string& memberName, const string& memberJob) :Member(memberId, password, memberName, memberJob) {
+        Load_Member_File();
+    }
 
     int getBookLimit() const {
         return booklimit;
@@ -216,7 +247,62 @@ public:
     void setDaysLimit(int daysLimit) {
         daylimit = daysLimit;
     }
+
+
+    void display() const {
+        Member::display();
+        cout << "대여 가능 권 수: " << booklimit << endl;
+        cout << "대여 가능 기간: " << daylimit << "일" << endl;
+    }
+
+
+    void save_Member_File() {
+        ofstream file("members.txt");
+        if (file.is_open()) {
+            for (const User& user : users) {
+                file << user.getId() << " " << user.getPassword() << " " << user.getName() << " " << user.getJob() << " " << user.getBookLimit() << " " << user.getDaysLimit() << endl;
+            }
+            file.close();
+        }
+    }
+
+    void Load_Member_File() {
+        ifstream file("members.txt");
+        if (file.is_open()) {
+            users.clear();
+            string id, password, name, job;
+            int booklimit, dayslimit;
+            while (file >> id >> password >> name >> job >> booklimit >> dayslimit) {
+                User user(id, password, name, job, booklimit, dayslimit);
+                users.push_back(user);
+
+            }
+            file.close();
+        }
+    }
 };
+
+
+class Student : public User {
+public:
+    Student(const string& memberId, const string& password, const string& memberName, const string& memberJob)
+        : User(memberId, password, memberName, memberJob, 5, 14) {}
+};
+
+class Professor : public User {
+public:
+    Professor(const string& memberId, const string& password, const string& memberName, const string& memberJob)
+        : User(memberId, password, memberName, memberJob, 10, 28) {}
+};
+
+class PostgraduateStudent : public User {
+public:
+    PostgraduateStudent(const string& memberId, const string& password, const string& memberName, const string& memberJob)
+        : User(memberId, password, memberName, memberJob, 5, 14) {}
+};
+
+
+
 
 // BookSystem 클래스: 도서 관리 시스템을 나타내는 클래스
 class BookSystem {
@@ -235,9 +321,9 @@ public:
         Load_Book_File();
     }
     // 도서 추가 메서드: 새로운 도서를 도서 목록에 추가하고 파일에 저장
-    void add_Book(Book& book) {
-        
-        
+    void add_Book(Book& book) { // 오지현이 수정한 메서드
+
+
         float number = book.getNumbering();
         for (const Book& book1 : books) {
             if (book1.getGenre() == book.getGenre()) {
@@ -248,7 +334,6 @@ public:
         book.setNumbering(number);
         books.push_back(book);
         save_Book_File();
-
     }
 
     bool rent_Book(const string& bookName, const string& memberId) {
@@ -275,6 +360,9 @@ public:
         return false; // 대여 실패 시 false 반환
     }
 
+
+
+
     // 도서 반납 메서드: 특정 도서를 반납하고 파일에 저장
     bool return_Book(const string& bookName, const string& memberId) {
         auto it = std::find_if(books.begin(), books.end(), [&](const Book& book) {
@@ -291,10 +379,13 @@ public:
             float currentRating = it->getStarPoint();
             float newRating = (currentRating + userRating) / 2.0;  // 예시로 간단한 평균 계산
 
+            // 기존 코드 //
             it->setStarPoint(newRating);
             it->setRentingStatus(false, "없음");
             save_Book_File();
-
+            // 기존 코드 //
+            // 
+            // 
             // 리뷰 입력 받기
             string review;
             cout << bookName << "의 리뷰를 작성해주세요: ";
@@ -302,6 +393,8 @@ public:
             getline(cin, review);
             saveReview(bookName, review);
 
+
+            cout << bookName << " 이(가) 반납되었습니다." << endl;
             return true; // 성공적으로 반납된 경우 true 반환
         }
         else {
@@ -410,7 +503,7 @@ class MemberSystem {
 private:
     vector<Member> members;
     vector<Admin> admins;  // 관리자 정보를 저장하는 벡터
-
+    vector<User> users;
 public:
 
     MemberSystem() {
@@ -418,16 +511,63 @@ public:
         Load_Admin_File();  // 관리자 정보 파일 로드
     }
 
-    void signUp(const Member& member) {
+    void signUp(const User& user) {
+        if (isDuplicateId(user.getId())) {
+            cout << "이미 존재하는 아이디입니다. 다른 아이디를 사용해 주세요." << endl;
+            return;
+        }
 
-        members.push_back(member);
+        //users.push_back(user);
+
+
+        if (user.getJob() == "대학생") {
+            Student student(user.getId(), user.getPassword(), user.getName(), user.getJob());
+
+            cout << "student" << user.getId() << endl;
+            users.push_back(student);
+        }
+        else if (user.getJob() == "교수") {
+            Professor professor(user.getId(), user.getPassword(), user.getName(), user.getJob());
+
+            cout << "professor" << user.getId() << endl;
+            users.push_back(professor);
+        }
+        else if (user.getJob() == "대학원생") {
+            PostgraduateStudent postgraduateStudent(user.getId(), user.getPassword(), user.getName(), user.getJob());
+
+            cout << "poststudent" << user.getId() << endl;
+            users.push_back(postgraduateStudent);
+        }
+
+
+
         save_Member_File();
         cout << "회원가입이 완료되었습니다." << endl;
     }
 
-    bool login(const string& id, const string& password) {
+
+
+    bool isDuplicateId(const string& id) const {
+        // 멤버 벡터에서 아이디가 이미 존재하는지 확인합니다.
         for (const Member& member : members) {
-            if (member.getId() == id && member.getPassword() == password) {
+            if (member.getId() == id) {
+                return true; // 중복된 아이디 발견
+            }
+        }
+
+        for (const Admin& admin : admins) {
+            if (admin.getId() == id) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+    bool login(const string& id, const string& password) {
+        for (const User& user : users) {
+            if (user.getId() == id && user.getPassword() == password) {
                 cout << "로그인 성공!" << endl;
                 return true;
             }
@@ -504,6 +644,27 @@ public:
         }
     }
 
+    void saveRentedBook(const string& bookName, const string& memberId) { //"멤버"파일에 대여했던 정보 저장
+        ofstream rentedFile(memberId + "_rentedbook.txt", ios::app);
+        if (rentedFile.is_open()) {
+            rentedFile << bookName << endl;
+            rentedFile.close();
+        }
+    }
+
+
+    void check_rentedBooks(string& memberId) { // 오지현 추가(회원 정보 존재하면 파일에 저장하는 멤버 클래스 메서드 실행)
+        auto it = find_if(users.begin(), users.end(), [&](const Member& member) {
+            return member.getId() == memberId;
+            });
+        if (it != users.end()) {
+            it->check_rentedBooks(memberId);
+        }
+
+    }
+
+
+
     void displayMembers() {
         if (members.empty()) {
             cout << "회원 목록이 비어 있습니다." << endl;
@@ -571,11 +732,14 @@ private:
     void Load_Member_File() {
         ifstream file("members.txt");
         if (file.is_open()) {
-            members.clear();
+            users.clear();
             string id, password, name, job;
-            while (file >> id >> password >> name >> job) {
-                Member member(id, password, name, job);
-                members.push_back(member);
+            int booklimit, dayslimit;
+            while (file >> id >> password >> name >> job >> booklimit >> dayslimit) {
+                //Member member(id, password, name, job);
+                User user(id, password, name, job, booklimit, dayslimit);
+                users.push_back(user);
+
             }
             file.close();
         }
@@ -585,8 +749,8 @@ private:
     void save_Member_File() {
         ofstream file("members.txt");
         if (file.is_open()) {
-            for (const Member& member : members) {
-                file << member.getId() << " " << member.getPassword() << " " << member.getName() << " " << member.getJob() << endl;
+            for (const User& user : users) {
+                file << user.getId() << " " << user.getPassword() << " " << user.getName() << " " << user.getJob() << " " << user.getBookLimit() << " " << user.getDaysLimit() << endl;
             }
             file.close();
         }
@@ -748,13 +912,12 @@ private:
     void addBook() {
         try {
             string bookName, writer, publisher, genre, review;
-            float starPoint,numbering;
+            float starPoint, numbering;
             int gn;
-         
+
             int page;
             bool rent = 0;
             string rentId = "없음";
-
             cout << "도서 이름: ";
             cin.ignore();
             getline(cin, bookName);
@@ -765,9 +928,9 @@ private:
             cout << "장르: 1. 컴퓨터, 2 수학, 3.과학 4. 소설";
             cin >> gn;
             if (gn == 1) { genre = "컴퓨터"; numbering = 100; }
-            else if (gn == 2) { genre = "수학"; numbering = 200;}
-            else if (gn == 3) { genre = "과학"; numbering = 300;}
-            else if (gn == 4) { genre = "소설" ; numbering = 400;}
+            else if (gn == 2) { genre = "수학"; numbering = 200; }
+            else if (gn == 3) { genre = "과학"; numbering = 300; }
+            else if (gn == 4) { genre = "소설"; numbering = 400; }
             cout << "별점: ";
             cin >> starPoint;
             cout << "리뷰: ";
@@ -775,8 +938,8 @@ private:
             getline(cin, review);
             cout << "페이지 수: ";
             cin >> page;
-
-            Book newBook(bookName, writer, publisher, genre, numbering ,starPoint, review, page, rent, rentId);
+            Book newBook(bookName, writer, publisher, genre, numbering, starPoint, review, page,
+                rent, rentId);
             system.add_Book(newBook);
         }
         catch (const exception& e) {
@@ -827,6 +990,10 @@ public:
                 enter_searchBooks();
                 break;
             }
+            case 6: {//오지현이 추가한거
+                check_rentedBooks();
+                break;
+            }
             default:
                 cout << "잘못된 입력입니다. 다시 시도하세요." << endl;
             }
@@ -840,7 +1007,7 @@ private:
         cout << "3. 도서 반납" << endl;
         cout << "4. 대여중인 도서 조회" << endl;
         cout << "5. 도서 검색" << endl;
-        //cout << "6. 대여했던 도서 조회" << endl;
+        cout << "6. 대여했던 도서 조회" << endl; // 오지현이 추가한거
         cout << "0. 종료" << endl;
         cout << "메뉴 선택: ";
     }
@@ -881,8 +1048,10 @@ private:
 
         if (system.rent_Book(bookName, currentMemberId)) {
             memberSystem.rentBook(currentMemberId, bookName);
+            memberSystem.saveRentedBook(bookName, currentMemberId); // 오지현 추가 (대여할때 각 회원 텍스트 파일에 책 제목 저장)
         }
     }
+
 
     // 반납 기능 추가
     void returnBook() {
@@ -927,6 +1096,12 @@ private:
         getline(cin, keyword);
         system.searchBooks(keyword);
     }
+
+    void check_rentedBooks() { // 오지현이 추가한것
+        cout << "지금까지 대여했던 책의 제목을 보여드리겠습니다" << endl;
+        memberSystem.check_rentedBooks(currentMemberId);
+    }
+
 };
 
 class LoginApp : public App {
@@ -1012,7 +1187,7 @@ private:
         cin >> name;
         cout << "직업: ";
         cin >> job;
-        newUser = User(id, password, name, job, 5, 15); // 예시로 bookLimit과 daysLimit을 초기값으로 설정
+        newUser = User(id, password, name, job); // 예시로 bookLimit과 daysLimit을 초기값으로 설정
         memberSystem.signUp(newUser);                   // 회원가입 함수 호출
 
     }
