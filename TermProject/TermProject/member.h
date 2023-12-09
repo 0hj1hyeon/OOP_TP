@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 #include "book.h"
 #include<iostream>
 #include<string>
 #include <vector>
+=======
+#include<iostream>
+#include<string>
+#include <vector>
+#include "book.h" // Book 클래스 정의가 있는 헤더 파일을 포함합니다
+>>>>>>> 8adb0e24c409e98410d362b8b8f537ed63f162a9
 using namespace std;
 
 class Member {
@@ -10,6 +17,7 @@ class Member {
     std::string pw;
     std::string name;
     std::string job;
+    std::vector<Book> bookCollection; // Book 객체를 저장하는 벡터
 
 	int booklimit; // 대여가능한 권 수
 	int daylimit; // 대여 가능 기간
@@ -34,6 +42,11 @@ public:
     void setJob(const std::string& memberJob);
     void setBookLimit(int bookLimit);
     void setDaysLimit(int daysLimit);
+
+    // Book 객체 벡터에 관련된 메서드
+    void addBook(const Book& newBook);
+    void removeBook(const std::string& bookName);
+    void displayBooks() const;
 };
 
 
