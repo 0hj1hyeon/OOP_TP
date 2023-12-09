@@ -1,6 +1,7 @@
-
+#include "book.h"
 #include<iostream>
 #include<string>
+#include <vector>
 using namespace std;
 
 class Member {
@@ -12,6 +13,7 @@ class Member {
 
 	int booklimit; // 대여가능한 권 수
 	int daylimit; // 대여 가능 기간
+    vector<Book> borrowedBooks; // 책 저장
 
 public:
     // 생성자

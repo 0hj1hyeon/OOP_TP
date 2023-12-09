@@ -1,0 +1,5 @@
+﻿  별점, 도서검색(리뷰, 대여중 통합).cpp
+C:\Users\ohj01\OneDrive\바탕 화면\github\OOP_TP\별점, 도서검색 (리뷰, 대여중 통합)\별점, 도서검색 (리뷰, 대여중 통합)\별점, 도서검색(리뷰, 대여중 통합).cpp(292,29): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\ohj01\OneDrive\바탕 화면\github\OOP_TP\별점, 도서검색 (리뷰, 대여중 통합)\별점, 도서검색 (리뷰, 대여중 통합)\별점, 도서검색(리뷰, 대여중 통합).cpp(867): warning C4715: 'StudentApp::displayBooks': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\Users\ohj01\OneDrive\바탕 화면\github\OOP_TP\별점, 도서검색 (리뷰, 대여중 통합)\별점, 도서검색 (리뷰, 대여중 통합)\별점, 도서검색(리뷰, 대여중 통합).cpp(728): warning C4715: 'AdminApp::displayBooks': 모든 제어 경로에서 값을 반환하지는 않습니다.
+  별점, 도서검색 (리뷰, 대여중 통합).vcxproj -> C:\Users\ohj01\OneDrive\바탕 화면\github\OOP_TP\별점, 도서검색 (리뷰, 대여중 통합)\x64\Debug\별점, 도서검색 (리뷰, 대여중 통합).exe
